@@ -1,5 +1,6 @@
 package com.example.quanlyhieuthuoc;
 
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 
 import androidx.activity.EdgeToEdge;
@@ -20,5 +21,9 @@ public class MainActivity extends AppCompatActivity {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
+        DatabaseHelper dbHelper = new DatabaseHelper(this);
+
+        // Mở hoặc tạo cơ sở dữ liệu
+        SQLiteDatabase db = dbHelper.getWritableDatabase();
     }
 }
