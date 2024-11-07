@@ -11,17 +11,21 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Quanlyhieuthuoc"
         tools:targetApi="31">
-
-        <!-- Activity nhanvien được khởi động đầu tiên -->
-        <activity
-            android:name=".nhanvien"
+        <activity android:name=".trangchu"
             android:exported="true">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
+        <intent-filter>
+            <action android:name="android.intent.action.MAIN" />
+            <category android:name="android.intent.category.LAUNCHER" />
+        </intent-filter>
         </activity>
+
+        <activity
+            android:name=".nhanvien" />
         <activity android:name=".MainActivity" />
+        <activity android:name=".themnv"/>
+        <activity android:name=".nhacungcap"/>
+        <activity android:name=".thongtinkhac"/>
+
 
     </application>
 </manifest>

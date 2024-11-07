@@ -39,11 +39,7 @@ public class nhanvien extends AppCompatActivity {
 
         // Thiết lập layout cho Activity
         setContentView(R.layout.nhanvien);
-        im_themnv.setOnClickListener(view -> {
 
-            Intent intent = new Intent(nhanvien.this, themnv.class);
-            startActivity(intent); // Chuyển sang AddEmployeeActivity
-        });
         // Khởi tạo các thành phần UI
         im_themnv = findViewById(R.id.im_themnv);
         im_xoanv = findViewById(R.id.im_xoanv);
@@ -60,7 +56,19 @@ public class nhanvien extends AppCompatActivity {
 
         // Gọi phương thức để sao chép cơ sở dữ liệu và tải dữ liệu
         processCopy();
+
+        // Lấy dữ liệu từ cơ sở dữ liệu vào ListView
         loadDataFromDatabase();
+
+        // Lắng nghe sự kiện cho nút thêm nhân viên
+        im_themnv.setOnClickListener(view -> {
+            Intent intent = new Intent(nhanvien.this, themnv.class);
+            startActivity(intent); // Chuyển sang AddEmployeeActivity
+        });
+        im_xoanv.setOnClickListener (view ->{
+            Intent thoat= new Intent(nhanvien.this,trangchu.class);
+            startActivity(thoat);
+        });
 
         // Lắng nghe sự kiện cho nút tìm kiếm
         bt_tknv.setOnClickListener(view -> {
@@ -121,8 +129,13 @@ public class nhanvien extends AppCompatActivity {
         Cursor c = mydatabase.query("nhanvien", null, null, null, null, null, null);
         if (c.moveToFirst()) {
             do {
-                // Hiển thị tất cả thông tin nhân viên trong ListView
-                String data = "ID: " + c.getInt(0) + " - Tên nhân viên: " + c.getString(1); // Giả sử cột 1 là tên nhân viên
+                // Hiển thị tất cả thông tin trong ListView
+                String data = "MA_NV: " + c.getInt(0) +
+                        " - Tên nhân vien: " + c.getString(1) +
+                        " - Đia Chỉ: " + c.getString(2) +
+                        " - So DT: " + c.getString(3) +
+                        " - Email: " + c.getString(4) +
+                        " - Ngay sinh: " + c.getInt(5);
                 myList.add(data);
                 idList.add(c.getInt(0)); // Lưu ID vào danh sách
             } while (c.moveToNext());
@@ -134,28 +147,23 @@ public class nhanvien extends AppCompatActivity {
     // Hàm tìm kiếm nhân viên theo tên
     private void searchEmployee(String keyword) {
         myList.clear(); // Xóa danh sách hiện tại
-        Cursor c = mydatabase.rawQuery("SELECT * FROM nhanvien WHERE name LIKE ?", new String[]{"%" + keyword + "%"});
-        if (c.moveToFirst()) {
-            do {
-                String data = "ID: " + c.getInt(0) + " - Tên nhân viên: " + c.getString(1);
-                myList.add(data);
-            } while (c.moveToNext());
-        }
+        Cursor c = mydatabase.rawQuery("SELECT * FROM nhanvien WHERE ten_nv LIKE ?", new String[]{"%" + keyword + "%"});
+
         c.close();
         myAdapter.notifyDataSetChanged(); // Cập nhật ListView
     }
 
     // Hàm xóa dữ liệu từ cơ sở dữ liệu
     private void deleteDataFromDatabase() {
-        int selectedId = (Integer) im_xoanv.getTag(); // Lấy ID từ tag của nút xóa
-
-        if (selectedId == 0) {
+        if (im_xoanv.getTag() == null) {
             Toast.makeText(this, "Vui lòng chọn một bản ghi để xóa", Toast.LENGTH_SHORT).show();
             return;
         }
 
+        int selectedId = (Integer) im_xoanv.getTag(); // Lấy ID từ tag của nút xóa
+
         // Thực hiện xóa từ cơ sở dữ liệu
-        int deletedRows = mydatabase.delete("nhanvien", "id = ?", new String[]{String.valueOf(selectedId)});
+        int deletedRows = mydatabase.delete("nhanvien", "ma_nv = ?", new String[]{String.valueOf(selectedId)});
 
         // Thông báo và cập nhật lại ListView
         if (deletedRows > 0) {

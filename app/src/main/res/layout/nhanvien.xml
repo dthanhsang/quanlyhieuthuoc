@@ -10,32 +10,33 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-
         android:background="@color/material_dynamic_neutral90"
         android:gravity="center_vertical"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        android:paddingVertical="8dp">
 
-
-        <!-- Title centered between buttons -->
+        <!-- Delete Button -->
         <ImageButton
             android:id="@+id/im_xoanv"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:contentDescription="Icon"
-            android:src="@android:drawable/ic_input_delete" />
+            android:contentDescription="Delete"
+            android:src="@android:drawable/ic_input_delete"
+            android:layout_marginEnd="16dp" />
 
+        <!-- Title centered between buttons -->
         <TextView
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_gravity="center"
-
             android:layout_weight="2"
             android:text="Danh sách nhân viên"
             android:textColor="#53AF12"
             android:textSize="24sp"
             android:textStyle="italic"
-            /> <!-- Căn giữa giữa hai ImageButton -->
+            android:gravity="center" />
 
+        <!-- Add Button -->
         <ImageButton
             android:id="@+id/im_themnv"
             android:layout_width="wrap_content"
@@ -73,7 +74,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="Tìm kiếm nhân viên"
-        android:layout_marginTop="8dp"/>
+        android:layout_marginTop="8dp"
+        android:padding="10dp" />
 
     <!-- Search Button -->
     <Button
@@ -87,6 +89,7 @@
     <ListView
         android:id="@+id/lv_nv"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"/>
+        android:layout_height="0dp"
+        android:layout_marginTop="16dp"
+        android:layout_weight="1"/>
 </LinearLayout>
