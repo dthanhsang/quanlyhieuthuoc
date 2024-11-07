@@ -1,30 +1,50 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:anhdroid="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:padding="16dp">
 
-    <!-- Input fields for Employee details -->
-    <EditText
-        android:id="@+id/editTextName"
+    <!-- Title and ImageButton (icon next to the title) -->
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Tên nhân viên" />
 
-    <EditText
-        android:id="@+id/editTextPosition"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="Chức vụ" />
+        android:background="@color/material_dynamic_neutral90"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
 
-    <EditText
-        android:id="@+id/editTextDepartment"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="Phòng ban" />
 
-    <!-- Buttons for Add, Edit, Delete, and Search -->
+        <!-- Title centered between buttons -->
+        <ImageButton
+            android:id="@+id/im_xoanv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:contentDescription="Icon"
+            android:src="@android:drawable/ic_input_delete" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_gravity="center"
+
+            android:layout_weight="2"
+            android:text="Danh sách nhân viên"
+            android:textColor="#53AF12"
+            android:textSize="24sp"
+            android:textStyle="italic"
+            /> <!-- Căn giữa giữa hai ImageButton -->
+
+        <ImageButton
+            android:id="@+id/im_themnv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:contentDescription="Add"
+            android:src="@android:drawable/ic_menu_add" />
+    </LinearLayout>
+
+    <!-- Buttons for Edit, Delete -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -33,21 +53,14 @@
         android:gravity="center">
 
         <Button
-            android:id="@+id/buttonAdd"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="Thêm" />
-
-        <Button
-            android:id="@+id/buttonEdit"
+            android:id="@+id/bt_suanv"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="Sửa" />
 
         <Button
-            android:id="@+id/buttonDelete"
+            android:id="@+id/bt_xoanv"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
@@ -56,22 +69,23 @@
 
     <!-- Search field -->
     <EditText
-        android:id="@+id/editTextSearch"
+        android:id="@+id/edt_tknv"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="Tìm kiếm nhân viên"
         android:layout_marginTop="8dp"/>
 
+    <!-- Search Button -->
     <Button
-        android:id="@+id/buttonSearch"
+        android:id="@+id/bt_tknv"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Tìm kiếm"
-        android:layout_marginTop="4dp" />
+        android:layout_marginTop="4dp"
+        android:text="Tìm kiếm" />
 
     <!-- ListView to display employee data -->
     <ListView
-        android:id="@+id/listViewEmployees"
+        android:id="@+id/lv_nv"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"/>
