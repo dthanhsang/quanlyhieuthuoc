@@ -22,7 +22,7 @@ import java.util.ArrayList;
 
 public class nhacungcap extends AppCompatActivity {
     EditText edtid, edttenncc, edtdiachi, edthopdong, edtsdt, edtemail;
-    Button btnthem, btnsua, btnxoa, btntim, btncapnhap;
+    Button btnthem, btnsua, btnxoa, btntim;
 
     ListView lv;
     ArrayList<String> myList;
@@ -48,7 +48,7 @@ public class nhacungcap extends AppCompatActivity {
         btnsua = findViewById(R.id.btnsua);
         btnxoa = findViewById(R.id.btnxoa);
         btntim = findViewById(R.id.btntim);
-        btncapnhap = findViewById(R.id.btncapnhap);
+
 
         lv = findViewById(R.id.lv);
         myList = new ArrayList<>();
@@ -61,40 +61,31 @@ public class nhacungcap extends AppCompatActivity {
 
         // Thiết lập sự kiện cho nút thêm
         btnthem.setOnClickListener(view -> addDataToDatabase());
+        btnsua.setOnClickListener(view -> sua());
+        btnxoa.setOnClickListener(view -> deleteDataFromDatabase());
 
-
-        // Thiết lập sự kiện cho nút cập nhật
-        btncapnhap.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                String ten_ncc = edttenncc.getText().toString();
-                String dia_chi = edtdiachi.getText().toString();
-                String hopdong = edthopdong.getText().toString();
-                String sdt = edtsdt.getText().toString();
-                String email = edtemail.getText().toString();
-                int id = Integer.parseInt(edtid.getText().toString());
-
-                ContentValues myvalue = new ContentValues();
-                myvalue.put("ten_ncc", ten_ncc);
-                myvalue.put("dia_chi", dia_chi);
-                myvalue.put("hopdong", hopdong);
-                myvalue.put("sdt", sdt);
-                myvalue.put("email", email);
-
-                int n = mydatabase.update("nhacungcap", myvalue, "id = ?", new String[]{String.valueOf(id)});
-                String msg = (n > 0) ? "Cập nhật thành công" : "Cập nhật thất bại";
-                Toast.makeText(nhacungcap.this, msg, Toast.LENGTH_SHORT).show();
-                loadDataFromDatabase(); // Tải lại dữ liệu
+        // Event listener for item selection in ListView
+        lv.setOnItemClickListener((parent, view, position, id) -> {
+            // Get selected ID and display it in edt_ma_nv (non-editable)
+            int selectedId = idList.get(position);
+            edtid.setText(String.valueOf(selectedId));
+            btnxoa.setTag(selectedId);
+            // Display all other information in respective EditText fields
+            String selectedData = myList.get(position);
+            String[] dataParts = selectedData.split(" - ");
+            if (dataParts.length >= 6) {
+                edttenncc.setText(dataParts[1].split(":")[1].trim());
+                edtdiachi.setText(dataParts[2].split(":")[1].trim());
+                edthopdong.setText(dataParts[3].split(":")[1].trim());
+                edtsdt.setText(dataParts[4].split(":")[1].trim());
+                edtemail.setText(dataParts[5].split(":")[1].trim());
             }
+
+            // Show a toast with the selected ID
+            Toast.makeText(nhacungcap.this, "ID được chọn: " + selectedId, Toast.LENGTH_SHORT).show();
         });
 
-        // Xử lý xóa nhà cung cấp (nếu có)
-        btnxoa.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                // Thêm logic xóa
-            }
-        });
+
 
         // Tìm kiếm nhà cung cấp (nếu có)
         btntim.setOnClickListener(new View.OnClickListener() {
@@ -104,6 +95,9 @@ public class nhacungcap extends AppCompatActivity {
             }
         });
     }
+
+
+
 
     // Hàm sao chép cơ sở dữ liệu từ thư mục assets
     private void processCopy() {
@@ -169,6 +163,7 @@ public class nhacungcap extends AppCompatActivity {
         myAdapter.notifyDataSetChanged(); // Cập nhật ListView
     }
 
+    //btnthem
     private void addDataToDatabase() {
         String tenncc = edttenncc.getText().toString();
         String diachi = edtdiachi.getText().toString();
@@ -193,7 +188,68 @@ public class nhacungcap extends AppCompatActivity {
         }
     }
 
-   // private void xoadulieu(){
+    //btnsua
+    private void sua() {
+        int selectedId;
+        try {
+            selectedId = Integer.parseInt(edtid.getText().toString());
+        } catch (NumberFormatException e) {
+            Toast.makeText(this, "Vui lòng chọn nhân viên hợp lệ", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        String tenncc = edttenncc.getText().toString();
+        String diachi = edtdiachi.getText().toString();
+        String sdt = edthopdong.getText().toString();
+        String email = edtsdt.getText().toString();
+        String ngaysinh = edtemail.getText().toString();
+
+        if (tenncc.isEmpty() || diachi.isEmpty() || sdt.isEmpty() || email.isEmpty() || ngaysinh.isEmpty()) {
+            Toast.makeText(this, "Vui lòng điền đầy đủ thông tin nhân viên", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        try {
+            String sql = "UPDATE nhacungcap SET ten_ncc = ?, dia_chi = ?, hopdong = ?, sdt = ?, email = ? WHERE id = ?";
+            mydatabase.execSQL(sql, new Object[]{tenncc, diachi, sdt, email, ngaysinh, selectedId});
+            Toast.makeText(this, "Cập nhật thông tin nhân viên thành công", Toast.LENGTH_SHORT).show();
+            loadDataFromDatabase();
+            xoadulieu();
+        } catch (Exception e) {
+            Toast.makeText(this, "Lỗi khi cập nhật dữ liệu: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+            e.printStackTrace();
+        }
+    }
+
+    // Hàm xóa dữ liệu từ cơ sở dữ liệu
+    private void deleteDataFromDatabase() {
+        // Lấy ID đã lưu trong nút xóa (lấy từ Tag của nút)
+        Integer selectedId = (Integer) btnxoa.getTag();
+
+        if (selectedId == null || selectedId == 0) {
+            Toast.makeText(this, "Vui lòng chọn một bản ghi để xóa", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        // Thực hiện xóa từ cơ sở dữ liệu
+        int deletedRows = mydatabase.delete("nhacungcap", "id = ?", new String[]{String.valueOf(selectedId)});
+
+        // Thông báo và cập nhật lại ListView
+        if (deletedRows > 0) {
+            Toast.makeText(this, "Xóa thành công", Toast.LENGTH_SHORT).show();
+            loadDataFromDatabase(); // Tải lại dữ liệu sau khi xóa
+            // Xóa các trường sau khi xóa thành công
+            btnxoa.setTag(0); // Đặt lại ID trong nút xóa
+            xoadulieu();
+
+        } else {
+            Toast.makeText(this, "Không tìm thấy bản ghi để xóa", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+
+
+     private void xoadulieu(){
         edttenncc.setText("");
         edtdiachi.setText("");
         edthopdong.setText("");
