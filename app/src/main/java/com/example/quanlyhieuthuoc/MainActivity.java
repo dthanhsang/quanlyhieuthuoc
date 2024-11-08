@@ -21,7 +21,7 @@ import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
     EditText edttenthuoc, edtnhacungcap, edtngaysanxuat, edthansudung, edtsoluong, edtId; // Thêm EditText cho ID
-    Button btnthem, btnxoa;
+    Button btnthem, btnxoa, btnsua;
     ListView lv;
     ArrayList<String> myList;
     ArrayList<Integer> idList; // Danh sách chứa các ID
@@ -46,6 +46,7 @@ public class MainActivity extends AppCompatActivity {
 
         btnthem = findViewById(R.id.btnthem);
         btnxoa = findViewById(R.id.btnxoa);
+        btnsua = findViewById(R.id.btnsua); // Nút "Sửa"
         lv = findViewById(R.id.lv);
 
         myList = new ArrayList<>();
@@ -62,14 +63,31 @@ public class MainActivity extends AppCompatActivity {
         // Thiết lập sự kiện cho nút "Xóa"
         btnxoa.setOnClickListener(v -> deleteDataFromDatabase());
 
+        // Thiết lập sự kiện cho nút "Sửa"
+        btnsua.setOnClickListener(v -> updateDataInDatabase());
+
         // Thiết lập sự kiện cho ListView
         lv.setOnItemClickListener((parent, view, position, id) -> {
-            // Lấy ID từ danh sách và thiết lập vào EditText (để xóa)
+            // Lấy ID từ danh sách và thiết lập vào EditText (để sửa)
             int selectedId = idList.get(position);
             edtId.setText(String.valueOf(selectedId)); // Hiển thị ID vào EditText
-            // Không thiết lập tên thuốc ở đây
+
+            // Cập nhật tag của nút xóa với ID đã chọn
+            btnxoa.setTag(selectedId); // Set selected ID as the tag of the delete button
+
+            // Hiển thị tất cả thông tin vào các EditText
+            String selectedData = myList.get(position);
+            String[] dataParts = selectedData.split(" - ");
+            if (dataParts.length >= 6) {
+                edttenthuoc.setText(dataParts[1].split(":")[1].trim());
+                edtnhacungcap.setText(dataParts[2].split(":")[1].trim());
+                edtngaysanxuat.setText(dataParts[3].split(":")[1].trim());
+                edthansudung.setText(dataParts[4].split(":")[1].trim());
+                edtsoluong.setText(dataParts[5].split(":")[1].trim());
+            }
+
+            // Thông báo ID được chọn
             Toast.makeText(MainActivity.this, "ID được chọn: " + selectedId, Toast.LENGTH_SHORT).show();
-            btnxoa.setTag(selectedId); // Lưu ID vào nút xóa để xóa khi nhấn
         });
     }
 
@@ -101,9 +119,10 @@ public class MainActivity extends AppCompatActivity {
 
     // Hàm để xóa dữ liệu từ cơ sở dữ liệu
     private void deleteDataFromDatabase() {
-        int selectedId = (Integer) btnxoa.getTag(); // Lấy ID đã lưu trong nút xóa
+        // Lấy ID đã lưu trong nút xóa (lấy từ Tag của nút)
+        Integer selectedId = (Integer) btnxoa.getTag();
 
-        if (selectedId == 0) {
+        if (selectedId == null || selectedId == 0) {
             Toast.makeText(this, "Vui lòng chọn một bản ghi để xóa", Toast.LENGTH_SHORT).show();
             return;
         }
@@ -123,6 +142,40 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    // Hàm để cập nhật dữ liệu trong cơ sở dữ liệu
+    private void updateDataInDatabase() {
+        int selectedId = Integer.parseInt(edtId.getText().toString());
+
+        // Kiểm tra ID hợp lệ
+        if (selectedId == 0) {
+            Toast.makeText(this, "Vui lòng chọn bản ghi cần sửa", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        String tenthuoc = edttenthuoc.getText().toString();
+        String nhacungcap = edtnhacungcap.getText().toString();
+        String ngaysanxuat = edtngaysanxuat.getText().toString();
+        String hansudung = edthansudung.getText().toString();
+        String soluongStr = edtsoluong.getText().toString();
+
+        // Kiểm tra dữ liệu hợp lệ
+        if (tenthuoc.isEmpty() || nhacungcap.isEmpty() || ngaysanxuat.isEmpty() || hansudung.isEmpty() || soluongStr.isEmpty()) {
+            Toast.makeText(this, "Vui lòng điền đầy đủ thông tin", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        int soluong = Integer.parseInt(soluongStr);
+
+        // Cập nhật dữ liệu trong cơ sở dữ liệu
+        String sql = "UPDATE thuoc SET tenthuoc = ?, manhacungcap = ?, ngaysanxuat = ?, hansudung = ?, soluong = ? WHERE id = ?";
+        mydatabase.execSQL(sql, new Object[]{tenthuoc, nhacungcap, ngaysanxuat, hansudung, soluong, selectedId});
+        Toast.makeText(this, "Cập nhật thành công", Toast.LENGTH_SHORT).show();
+
+        // Tải lại dữ liệu vào ListView
+        loadDataFromDatabase();
+        clearFields(); // Xóa các trường nhập
+    }
+
     // Hàm để tải dữ liệu từ cơ sở dữ liệu vào ListView
     private void loadDataFromDatabase() {
         myList.clear(); // Xóa danh sách hiện tại
@@ -130,78 +183,52 @@ public class MainActivity extends AppCompatActivity {
         Cursor c = mydatabase.query("thuoc", null, null, null, null, null, null);
         if (c.moveToFirst()) {
             do {
-                // Hiển thị tất cả thông tin trong ListView
-                String data = "ID: " + c.getInt(0) +
-                        " - Tên thuốc: " + c.getString(1) +
-                        " - Nhà cung cấp: " + c.getString(2) +
-                        " - Ngày sản xuất: " + c.getString(3) +
-                        " - Hạn sử dụng: " + c.getString(4) +
-                        " - Số lượng: " + c.getInt(5);
-                myList.add(data);
-                idList.add(c.getInt(0)); // Lưu ID vào danh sách
+                int id = c.getInt(c.getColumnIndex("id"));
+                String tenthuoc = c.getString(c.getColumnIndex("tenthuoc"));
+                String manhacungcap = c.getString(c.getColumnIndex("manhacungcap"));
+                String ngaysanxuat = c.getString(c.getColumnIndex("ngaysanxuat"));
+                String hansudung = c.getString(c.getColumnIndex("hansudung"));
+                int soluong = c.getInt(c.getColumnIndex("soluong"));
+
+                myList.add("ID: " + id + " - Tên thuốc: " + tenthuoc + " - Nhà cung cấp: " + manhacungcap +
+                        " - Ngày sản xuất: " + ngaysanxuat + " - Hạn sử dụng: " + hansudung + " - Số lượng: " + soluong);
+                idList.add(id); // Lưu ID vào danh sách
             } while (c.moveToNext());
         }
         c.close();
+
         myAdapter.notifyDataSetChanged(); // Cập nhật ListView
     }
 
-    // Hàm sao chép cơ sở dữ liệu từ thư mục assets
+    // Hàm để sao chép cơ sở dữ liệu từ assets vào bộ nhớ trong của thiết bị
     private void processCopy() {
-        File dbFile = getDatabasePath(DATABASE_NAME);
+        File dbFile = getApplicationContext().getDatabasePath(DATABASE_NAME);
         if (!dbFile.exists()) {
             try {
-                CopyDataBaseFromAsset();
-                Toast.makeText(this, "Sao chép thành công từ thư mục Assets", Toast.LENGTH_LONG).show();
+                InputStream is = getAssets().open(DATABASE_NAME);
+                OutputStream os = new FileOutputStream(dbFile);
+                byte[] buffer = new byte[1024];
+                int length;
+                while ((length = is.read(buffer)) > 0) {
+                    os.write(buffer, 0, length);
+                }
+                os.flush();
+                os.close();
+                is.close();
             } catch (Exception e) {
-                Toast.makeText(this, e.toString(), Toast.LENGTH_LONG).show();
+                e.printStackTrace();
             }
         }
-        mydatabase = openOrCreateDatabase(DATABASE_NAME, MODE_PRIVATE, null);
+        mydatabase = SQLiteDatabase.openOrCreateDatabase(dbFile, null);
     }
 
-    // Lấy đường dẫn tới database trong thư mục cài đặt ứng dụng
-    private String getDatabasePath() {
-        return getApplicationInfo().dataDir + DB_PATH_SUFFIX + DATABASE_NAME;
-    }
-
-    // Hàm sao chép database từ thư mục assets
-    public void CopyDataBaseFromAsset() {
-        try {
-            InputStream myInput = getAssets().open(DATABASE_NAME);
-            String outFileName = getDatabasePath();
-            File f = new File(getApplicationInfo().dataDir + DB_PATH_SUFFIX);
-            if (!f.exists()) {
-                f.mkdir();
-            }
-            OutputStream myOutput = new FileOutputStream(outFileName);
-            byte[] buffer = new byte[1024];
-            int length;
-            while ((length = myInput.read(buffer)) > 0) {
-                myOutput.write(buffer, 0, length);
-            }
-            myOutput.flush();
-            myOutput.close();
-            myInput.close();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    // Hàm để xóa các trường nhập sau khi thêm/xóa
+    // Hàm để xóa tất cả các trường nhập
     private void clearFields() {
         edttenthuoc.setText("");
         edtnhacungcap.setText("");
         edtngaysanxuat.setText("");
         edthansudung.setText("");
         edtsoluong.setText("");
-        edtId.setText(""); // Xóa ID
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        if (mydatabase != null) {
-            mydatabase.close(); // Đóng cơ sở dữ liệu khi Activity bị hủy
-        }
+        edtId.setText("");
     }
 }

@@ -7,14 +7,6 @@
 
     <!-- Input fields for Employee details -->
     <EditText
-        android:id="@+id/edt_ma_nv"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:enabled="false"
-        android:hint="Ma nhan vien" />
-
-
-    <EditText
         android:id="@+id/edt_ten"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
