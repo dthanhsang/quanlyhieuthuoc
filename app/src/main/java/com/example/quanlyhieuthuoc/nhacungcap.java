@@ -193,7 +193,7 @@ public class nhacungcap extends AppCompatActivity {
         }
     }
 
-    private void xoadulieu(){
+   // private void xoadulieu(){
         edttenncc.setText("");
         edtdiachi.setText("");
         edthopdong.setText("");
