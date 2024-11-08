@@ -24,7 +24,7 @@ public class nhanvien extends AppCompatActivity {
 
     // Khai báo các biến cho các thành phần UI
 
-    EditText edt_ten, edt_diachi,edt_sua,edt_sdt,edt_email, edt_ngaysinh,edt_tknv;
+    EditText edt_ten, edt_diachi,edt_sdt,edt_email, edt_ngaysinh,edt_tknv,edt_ma_nv;
     Button btn_themnv,btn_sua,btn_xoa,btn_timkiem;
     ListView lv_nv;
     ArrayList<String> myList;
@@ -32,60 +32,81 @@ public class nhanvien extends AppCompatActivity {
     ArrayAdapter<String> myAdapter;
     SQLiteDatabase mydatabase;
     String DB_PATH_SUFFIX = "/databases/";
-    String DATABASE_NAME = "hieuthuoc.db";
+    String DATABASE_NAME = "qlht.db";
 
     @SuppressLint("MissingInflatedId")
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        // Thiết lập layout cho Activity
+        // Set the layout for the Activity
         setContentView(R.layout.nhanvien);
 
-        edt_ten= findViewById(R.id.edt_ten);
+        // Initialize UI components
+        edt_ma_nv = findViewById(R.id.edt_ma_nv);  // Ensure edt_ma_nv is declared in your class
 
-        edt_diachi= findViewById(R.id.edt_diachi);
 
-        // Khởi tạo các thành phần UI
-        edt_sdt= findViewById(R.id.edt_sdt);
-        edt_email= findViewById(R.id.edt_email);
-
-        edt_ngaysinh= findViewById(R.id.edt_ngaysinh);
-
-        edt_tknv= findViewById(R.id.edt_tknv);
+        edt_ten = findViewById(R.id.edt_ten);
+        edt_diachi = findViewById(R.id.edt_diachi);
+        edt_sdt = findViewById(R.id.edt_sdt);
+        edt_email = findViewById(R.id.edt_email);
+        edt_ngaysinh = findViewById(R.id.edt_ngaysinh);
+        edt_tknv = findViewById(R.id.edt_tknv);
 
         btn_timkiem = findViewById(R.id.btn_timkiem);
         btn_xoa = findViewById(R.id.btn_xoa);
         lv_nv = findViewById(R.id.lv_nv);
-        btn_sua=findViewById(R.id.btn_sua);
-        btn_themnv=findViewById(R.id.btn_themnv);
+        btn_sua = findViewById(R.id.btn_sua);
+        btn_themnv = findViewById(R.id.btn_themnv);
 
-        // Khởi tạo các danh sách và adapter
+        // Initialize lists and adapter
         myList = new ArrayList<>();
         idList = new ArrayList<>();
         myAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, myList);
         lv_nv.setAdapter(myAdapter);
 
-        // Gọi phương thức để sao chép cơ sở dữ liệu và tải dữ liệu
+        // Copy the database and load data
         processCopy();
-
-        // Lấy dữ liệu từ cơ sở dữ liệu vào ListView
         loadDataFromDatabase();
 
-        // Lắng nghe sự kiện cho nút thêm nhân viên
+        // Event listener for adding employee
+        btn_themnv.setOnClickListener(view -> addDataToDatabase());
 
+        // Event listener for updating employee
+        btn_sua.setOnClickListener(view -> sua_nv());
 
-
-
-        // Lắng nghe sự kiện cho nút tìm kiếm
+        // Event listener for searching employee
         btn_timkiem.setOnClickListener(view -> {
             String keyword = edt_tknv.getText().toString();
             searchEmployee(keyword);
         });
 
-        // Lắng nghe sự kiện cho nút xóa
+        // Event listener for deleting employee
         btn_xoa.setOnClickListener(view -> deleteDataFromDatabase());
+
+        // Event listener for item selection in ListView
+        lv_nv.setOnItemClickListener((parent, view, position, id) -> {
+            // Get selected ID and display it in edt_ma_nv (non-editable)
+            int selectedId = idList.get(position);
+            edt_ma_nv.setText(String.valueOf(selectedId));
+            btn_xoa.setTag(selectedId);
+            // Display all other information in respective EditText fields
+            String selectedData = myList.get(position);
+            String[] dataParts = selectedData.split(" - ");
+            if (dataParts.length >= 6) {
+                edt_ten.setText(dataParts[1].split(":")[1].trim());
+                edt_diachi.setText(dataParts[2].split(":")[1].trim());
+                edt_sdt.setText(dataParts[3].split(":")[1].trim());
+                edt_email.setText(dataParts[4].split(":")[1].trim());
+                edt_ngaysinh.setText(dataParts[5].split(":")[1].trim());
+            }
+
+            // Show a toast with the selected ID
+            Toast.makeText(nhanvien.this, "ID được chọn: " + selectedId, Toast.LENGTH_SHORT).show();
+        });
     }
+
 
     // Hàm sao chép cơ sở dữ liệu từ thư mục assets
     private void processCopy() {
@@ -159,15 +180,71 @@ public class nhanvien extends AppCompatActivity {
         c.close();
         myAdapter.notifyDataSetChanged(); // Cập nhật ListView
     }
+    private void addDataToDatabase() {
+        String tennv = edt_ten.getText().toString();
+        String diachi = edt_diachi.getText().toString();
+        String sdt = edt_sdt.getText().toString();
+        String email = edt_email.getText().toString();
+        String ngaysinh = edt_ngaysinh.getText().toString();
 
-    // Hàm xóa dữ liệu từ cơ sở dữ liệu
-    private void deleteDataFromDatabase() {
-        if (btn_xoa.getTag() == null) {
-            Toast.makeText(this, "Vui lòng chọn một bản ghi để xóa", Toast.LENGTH_SHORT).show();
+        if (tennv.isEmpty() || diachi.isEmpty() || sdt.isEmpty() || email.isEmpty() || ngaysinh.isEmpty()) {
+            Toast.makeText(this, "Vui lòng điền đầy đủ thông tin nhân viên", Toast.LENGTH_SHORT).show();
             return;
         }
 
-        int selectedId = (Integer) btn_xoa.getTag(); // Lấy ID từ tag của nút xóa
+        try {
+            String sql = "INSERT INTO nhanvien (ten_nv, dia_chi, sdt, email, ngay_sinh) VALUES (?, ?, ?, ?, ?)";
+            mydatabase.execSQL(sql, new Object[]{tennv, diachi, sdt, email, ngaysinh});
+            Toast.makeText(this, "Thêm nhân viên thành công", Toast.LENGTH_SHORT).show();
+            loadDataFromDatabase();
+            xoadulieu();
+        } catch (Exception e) {
+            Toast.makeText(this, "Lỗi khi thêm dữ liệu: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+            e.printStackTrace();
+        }
+    }
+
+    private void sua_nv() {
+        int selectedId;
+        try {
+            selectedId = Integer.parseInt(edt_ma_nv.getText().toString());
+        } catch (NumberFormatException e) {
+            Toast.makeText(this, "Vui lòng chọn nhân viên hợp lệ", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        String tennv = edt_ten.getText().toString();
+        String diachi = edt_diachi.getText().toString();
+        String sdt = edt_sdt.getText().toString();
+        String email = edt_email.getText().toString();
+        String ngaysinh = edt_ngaysinh.getText().toString();
+
+        if (tennv.isEmpty() || diachi.isEmpty() || sdt.isEmpty() || email.isEmpty() || ngaysinh.isEmpty()) {
+            Toast.makeText(this, "Vui lòng điền đầy đủ thông tin nhân viên", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        try {
+            String sql = "UPDATE nhanvien SET ten_nv = ?, dia_chi = ?, sdt = ?, email = ?, ngay_sinh = ? WHERE ma_nv = ?";
+            mydatabase.execSQL(sql, new Object[]{tennv, diachi, sdt, email, ngaysinh, selectedId});
+            Toast.makeText(this, "Cập nhật thông tin nhân viên thành công", Toast.LENGTH_SHORT).show();
+            loadDataFromDatabase();
+            xoadulieu();
+        } catch (Exception e) {
+            Toast.makeText(this, "Lỗi khi cập nhật dữ liệu: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+            e.printStackTrace();
+        }
+    }
+
+    // Hàm xóa dữ liệu từ cơ sở dữ liệu
+    private void deleteDataFromDatabase() {
+        // Lấy ID đã lưu trong nút xóa (lấy từ Tag của nút)
+        Integer selectedId = (Integer) btn_xoa.getTag();
+
+        if (selectedId == null || selectedId == 0) {
+            Toast.makeText(this, "Vui lòng chọn một bản ghi để xóa", Toast.LENGTH_SHORT).show();
+            return;
+        }
 
         // Thực hiện xóa từ cơ sở dữ liệu
         int deletedRows = mydatabase.delete("nhanvien", "ma_nv = ?", new String[]{String.valueOf(selectedId)});
@@ -176,8 +253,21 @@ public class nhanvien extends AppCompatActivity {
         if (deletedRows > 0) {
             Toast.makeText(this, "Xóa thành công", Toast.LENGTH_SHORT).show();
             loadDataFromDatabase(); // Tải lại dữ liệu sau khi xóa
+           // Xóa các trường sau khi xóa thành công
+            btn_xoa.setTag(0); // Đặt lại ID trong nút xóa
+            xoadulieu();
+
         } else {
             Toast.makeText(this, "Không tìm thấy bản ghi để xóa", Toast.LENGTH_SHORT).show();
         }
+    }
+    private void xoadulieu(){
+        edt_ten.setText("");
+        edt_diachi.setText("");
+        edt_sdt.setText("");
+        edt_email.setText("");
+        edt_ngaysinh.setText("");
+        edt_ma_nv.setText("");
+
     }
 }

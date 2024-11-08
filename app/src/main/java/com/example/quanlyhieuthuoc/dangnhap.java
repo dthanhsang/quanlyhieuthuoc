@@ -19,7 +19,7 @@ public class dangnhap extends AppCompatActivity {
     Button btn_dangnhap;
     SQLiteDatabase mydatabase;
     String DB_PATH_SUFFIX = "/databases/";
-    String DATABASE_NAME = "hieuthuoc.db";
+    String DATABASE_NAME = "qlht.db";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

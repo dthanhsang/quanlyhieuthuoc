@@ -29,7 +29,7 @@ public class MainActivity extends AppCompatActivity {
 
     SQLiteDatabase mydatabase;
     String DB_PATH_SUFFIX = "/databases/";
-    String DATABASE_NAME = "hieuthuoc.db";
+    String DATABASE_NAME = "qlht.db";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

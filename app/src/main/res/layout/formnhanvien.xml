@@ -33,15 +33,11 @@
         android:id="@+id/edt_email"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:inputType="textEmailAddress"
-
-
         android:hint="email" />
     <EditText
         android:id="@+id/edt_ngaysinh"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:inputType="date"
         android:hint="Ngay sinh" />
     <!-- Action Buttons for CRUD Operations -->
     <LinearLayout
