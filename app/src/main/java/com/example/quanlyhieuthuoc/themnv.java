@@ -53,7 +53,8 @@ public class themnv extends AppCompatActivity {
                 try {
                     mydatabase.execSQL(sql, new Object[]{ten, dchi, sdt, email, ngaysinh});
                     Toast.makeText(this, "Đã thêm nhân viên: " + employeeName, Toast.LENGTH_SHORT).show();
-                    finish(); // Đóng Activity và quay lại Activity trước đó
+                    finish();
+                    // Đóng Activity và quay lại Activity trước đó
                 } catch (Exception e) {
                     Toast.makeText(this, "Lỗi khi thêm nhân viên: " + e.getMessage(), Toast.LENGTH_SHORT).show();
                 }
