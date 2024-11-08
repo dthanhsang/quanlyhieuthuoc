@@ -1,5 +1,6 @@
 package com.example.quanlyhieuthuoc;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -24,7 +25,7 @@ public class nhanvien extends AppCompatActivity {
     // Khai báo các biến cho các thành phần UI
     ImageButton im_themnv, im_xoanv;
     EditText edt_tknv;
-    Button bt_tknv, btnxoa;
+    Button bt_tknv, btnxoa, bt_capnhat;
     ListView lv_nv;
     ArrayList<String> myList;
     ArrayList<Integer> idList; // Danh sách chứa các ID
@@ -33,6 +34,7 @@ public class nhanvien extends AppCompatActivity {
     String DB_PATH_SUFFIX = "/databases/";
     String DATABASE_NAME = "hieuthuoc.db";
 
+    @SuppressLint("MissingInflatedId")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -47,6 +49,7 @@ public class nhanvien extends AppCompatActivity {
         bt_tknv = findViewById(R.id.bt_tknv);
         btnxoa = findViewById(R.id.bt_xoanv);
         lv_nv = findViewById(R.id.lv_nv);
+        bt_capnhat=findViewById(R.id.bt_capnhat);
 
         // Khởi tạo các danh sách và adapter
         myList = new ArrayList<>();
@@ -63,12 +66,16 @@ public class nhanvien extends AppCompatActivity {
         // Lắng nghe sự kiện cho nút thêm nhân viên
         im_themnv.setOnClickListener(view -> {
             Intent intent = new Intent(nhanvien.this, themnv.class);
-            startActivity(intent); // Chuyển sang AddEmployeeActivity
+            startActivity(intent);// Chuyển sang AddEmployeeActivity
+        });
+        bt_capnhat.setOnClickListener(view -> {
+            loadDataFromDatabase();// Chuyển sang AddEmployeeActivity
         });
         im_xoanv.setOnClickListener (view ->{
             Intent thoat= new Intent(nhanvien.this,trangchu.class);
             startActivity(thoat);
         });
+        loadDataFromDatabase();
 
         // Lắng nghe sự kiện cho nút tìm kiếm
         bt_tknv.setOnClickListener(view -> {

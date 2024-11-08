@@ -34,9 +34,9 @@
             android:layout_height="48dp"
             android:layout_weight="2"
             android:ems="10"
-            android:inputType="none"
             android:focusable="false"
-            android:hint="ID để xóa" />
+            android:hint="ID để xóa"
+            android:inputType="none" />
     </LinearLayout>
 
     <LinearLayout
@@ -166,6 +166,13 @@
             android:layout_height="48dp"
             android:layout_weight="1"
             android:text="Xóa" />
+
+        <Button
+            android:id="@+id/btnsua"
+            android:layout_width="0dp"
+            android:layout_height="48dp"
+            android:layout_weight="1"
+            android:text="Sửa" />
     </LinearLayout>
 
     <ListView
