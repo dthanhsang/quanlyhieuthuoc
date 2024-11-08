@@ -1,77 +1,65 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:anhdroid="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
     android:padding="16dp">
 
-    <!-- Title and ImageButton (icon next to the title) -->
-    <LinearLayout
+    <!-- Input fields for Employee details -->
+    <EditText
+        android:id="@+id/edt_ten"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/material_dynamic_neutral90"
-        android:gravity="center_vertical"
-        android:orientation="horizontal"
-        android:paddingVertical="8dp">
+        android:hint="Ten nhan vien" />
 
-        <!-- Delete Button -->
-        <ImageButton
-            android:id="@+id/im_xoanv"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:contentDescription="Delete"
-            android:src="@android:drawable/ic_input_delete"
-            android:layout_marginEnd="16dp" />
+    <EditText
+        android:id="@+id/edt_diachi"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Dia chi" />
 
-        <!-- Title centered between buttons -->
-        <TextView
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_gravity="center"
-            android:layout_weight="2"
-            android:text="Danh sách nhân viên"
-            android:textColor="#53AF12"
-            android:textSize="24sp"
-            android:textStyle="italic"
-            android:gravity="center" />
-
-        <!-- Add Button -->
-        <ImageButton
-            android:id="@+id/im_themnv"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:contentDescription="Add"
-            android:src="@android:drawable/ic_menu_add" />
-    </LinearLayout>
-
-    <!-- Buttons for Edit, Delete -->
+    <EditText
+        android:id="@+id/edt_sdt"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="So dien thoai" />
+    <EditText
+        android:id="@+id/edt_email"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="email" />
+    <EditText
+        android:id="@+id/edt_ngaysinh"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Ngay sinh" />
+    <!-- Action Buttons for CRUD Operations -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:layout_marginTop="16dp"
-        android:gravity="center">
+        android:layout_marginTop="8dp">
 
         <Button
-            android:id="@+id/bt_suanv"
+            android:id="@+id/btn_themnv"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="Sửa" />
+            android:text="Them" />
 
         <Button
-            android:id="@+id/bt_xoanv"
+            android:id="@+id/btn_sua"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="Xóa" />
+            android:text="Sua" />
+
         <Button
-            android:id="@+id/bt_capnhat"
+            android:id="@+id/btn_xoa"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="Update" />
+            android:text="Xoa" />
     </LinearLayout>
 
     <!-- Search field -->
@@ -79,23 +67,21 @@
         android:id="@+id/edt_tknv"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Tìm kiếm nhân viên"
-        android:layout_marginTop="8dp"
-        android:padding="10dp" />
+        android:hint="Tim kiem nhan vien"
+        android:layout_marginTop="16dp" />
 
-    <!-- Search Button -->
     <Button
-        android:id="@+id/bt_tknv"
+        android:id="@+id/btn_timkiem"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="4dp"
-        android:text="Tìm kiếm" />
+        android:text="Tim kiem" />
 
     <!-- ListView to display employee data -->
     <ListView
         android:id="@+id/lv_nv"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_marginTop="16dp"
-        android:layout_weight="1"/>
+        android:layout_weight="1"
+        android:layout_marginTop="16dp" />
+
 </LinearLayout>

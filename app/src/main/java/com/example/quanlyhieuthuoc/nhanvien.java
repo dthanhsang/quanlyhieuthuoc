@@ -23,9 +23,9 @@ import java.util.ArrayList;
 public class nhanvien extends AppCompatActivity {
 
     // Khai báo các biến cho các thành phần UI
-    ImageButton im_themnv, im_xoanv;
-    EditText edt_tknv;
-    Button bt_tknv, btnxoa, bt_capnhat;
+
+    EditText edt_ten, edt_diachi,edt_sua,edt_sdt,edt_email, edt_ngaysinh,edt_tknv;
+    Button btn_themnv,btn_sua,btn_xoa,btn_timkiem;
     ListView lv_nv;
     ArrayList<String> myList;
     ArrayList<Integer> idList; // Danh sách chứa các ID
@@ -42,14 +42,23 @@ public class nhanvien extends AppCompatActivity {
         // Thiết lập layout cho Activity
         setContentView(R.layout.nhanvien);
 
+        edt_ten= findViewById(R.id.edt_ten);
+
+        edt_diachi= findViewById(R.id.edt_diachi);
+
         // Khởi tạo các thành phần UI
-        im_themnv = findViewById(R.id.im_themnv);
-        im_xoanv = findViewById(R.id.im_xoanv);
-        edt_tknv = findViewById(R.id.edt_tknv);
-        bt_tknv = findViewById(R.id.bt_tknv);
-        btnxoa = findViewById(R.id.bt_xoanv);
+        edt_sdt= findViewById(R.id.edt_sdt);
+        edt_email= findViewById(R.id.edt_email);
+
+        edt_ngaysinh= findViewById(R.id.edt_ngaysinh);
+
+        edt_tknv= findViewById(R.id.edt_tknv);
+
+        btn_timkiem = findViewById(R.id.btn_timkiem);
+        btn_xoa = findViewById(R.id.btn_xoa);
         lv_nv = findViewById(R.id.lv_nv);
-        bt_capnhat=findViewById(R.id.bt_capnhat);
+        btn_sua=findViewById(R.id.btn_sua);
+        btn_themnv=findViewById(R.id.btn_themnv);
 
         // Khởi tạo các danh sách và adapter
         myList = new ArrayList<>();
@@ -64,27 +73,18 @@ public class nhanvien extends AppCompatActivity {
         loadDataFromDatabase();
 
         // Lắng nghe sự kiện cho nút thêm nhân viên
-        im_themnv.setOnClickListener(view -> {
-            Intent intent = new Intent(nhanvien.this, themnv.class);
-            startActivity(intent);// Chuyển sang AddEmployeeActivity
-        });
-        bt_capnhat.setOnClickListener(view -> {
-            loadDataFromDatabase();// Chuyển sang AddEmployeeActivity
-        });
-        im_xoanv.setOnClickListener (view ->{
-            Intent thoat= new Intent(nhanvien.this,trangchu.class);
-            startActivity(thoat);
-        });
-        loadDataFromDatabase();
+
+
+
 
         // Lắng nghe sự kiện cho nút tìm kiếm
-        bt_tknv.setOnClickListener(view -> {
+        btn_timkiem.setOnClickListener(view -> {
             String keyword = edt_tknv.getText().toString();
             searchEmployee(keyword);
         });
 
         // Lắng nghe sự kiện cho nút xóa
-        btnxoa.setOnClickListener(view -> deleteDataFromDatabase());
+        btn_xoa.setOnClickListener(view -> deleteDataFromDatabase());
     }
 
     // Hàm sao chép cơ sở dữ liệu từ thư mục assets
@@ -162,12 +162,12 @@ public class nhanvien extends AppCompatActivity {
 
     // Hàm xóa dữ liệu từ cơ sở dữ liệu
     private void deleteDataFromDatabase() {
-        if (im_xoanv.getTag() == null) {
+        if (btn_xoa.getTag() == null) {
             Toast.makeText(this, "Vui lòng chọn một bản ghi để xóa", Toast.LENGTH_SHORT).show();
             return;
         }
 
-        int selectedId = (Integer) im_xoanv.getTag(); // Lấy ID từ tag của nút xóa
+        int selectedId = (Integer) btn_xoa.getTag(); // Lấy ID từ tag của nút xóa
 
         // Thực hiện xóa từ cơ sở dữ liệu
         int deletedRows = mydatabase.delete("nhanvien", "ma_nv = ?", new String[]{String.valueOf(selectedId)});
