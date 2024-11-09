@@ -191,7 +191,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:ems="10"
-            android:hint="Tìm kiếm nhà cung cấp"
+            android:hint="Nhập id cần tìm"
             android:inputType="text" />
 
         <Button
